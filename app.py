@@ -13,7 +13,7 @@ def hello_world():
     return render_template('home.html',test='test string', l='1 2 3 4 5'.split())
 
 @app.route('/graph.png')
-def do_graph():
+def do_graph_png():
     pd.options.plotting.backend='plotly'
 
     df = (
@@ -36,6 +36,29 @@ def do_graph():
     bytes_png.write(fig.to_image('png'))
 
     return Response(bytes_png.getvalue(), mimetype='image/png')
+
+@app.route('/graph.html')
+def do_graph_html():
+    pd.options.plotting.backend='plotly'
+
+    df = (
+        pd.DataFrame({
+            'x':np.random.randn(100),
+            'y':np.random.randn(100),
+            'color':np.random.choice('red yellow green blue'.split(),100)
+            }
+        )
+    )
+
+    fig = df.plot(
+        kind='scatter',
+        x='x',
+        y='y',
+        c='color',
+    )
+
+    #return(fig.to_html())
+    return Response(fig.to_html(), mimetype='text/html')
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0')
